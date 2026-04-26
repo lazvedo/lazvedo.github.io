@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080808;
+      --bg2: #111111;
+      --bg3: #161616;
+      --border: rgba(255,255,255,0.07);
+      --border-hover: rgba(255,255,255,0.14);
+      --text: #f0ede8;
+      --text-muted: #666;
+      --text-dim: #444;
+      --accent: #7F77DD;
+      --accent-dim: rgba(127,119,221,0.12);
+      --green: #1D9E75;
+      --green-dim: rgba(29,158,117,0.1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.5;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 0.5px solid transparent;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    nav.scrolled {
+      background: rgba(8,8,8,0.92);
+      backdrop-filter: blur(12px);
+      border-color: var(--border);
+    }
+
+    .nav-logo {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-logo span { color: var(--accent); }
+
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+
+    .nav-links a {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      text-transform: lowercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 48px 80px;
+      max-width: 900px;
+    }
+
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      animation: fadeUp 0.6s ease 0.1s forwards;
+    }
+
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 24px;
+      height: 0.5px;
+      background: var(--text-dim);
+    }
+
+    .hero-title {
+      font-size: clamp(52px, 8vw, 96px);
+      font-weight: 700;
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-bottom: 28px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.25s forwards;
+    }
+
+    .hero-title .line2 {
+      color: var(--text-muted);
+    }
+
+    .hero-title .accent { color: var(--accent); }
+
+    .hero-desc {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 440px;
+      line-height: 1.7;
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.4s forwards;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.55s forwards;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--green-dim);
+      border: 0.5px solid rgba(29,158,117,0.25);
+      border-radius: 99px;
+      padding: 8px 16px;
+      font-size: 12px;
+      color: #5DCAA5;
+      font-family: 'DM Mono', monospace;
+      letter-spacing: 0.04em;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.8); }
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 0.5px solid var(--border-hover);
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 13px;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .btn-ghost:hover { border-color: var(--border-hover); color: var(--text); }
+
+    /* SECTIONS */
+    section {
+      padding: 100px 48px;
+      max-width: 900px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .section-number {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .section-line {
+      flex: 1;
+      height: 0.5px;
+      background: var(--border);
+    }
+
+    /* PROJECTS */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .proj-card {
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 14px;
+      padding: 28px;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  border-color 0.25s ease,
+                  background 0.25s ease;
+      cursor: pointer;
+    }
+
+    .proj-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--border-hover);
+      background: var(--bg3);
+    }
+
+    .proj-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .proj-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border-radius: 4px;
+      padding: 3px 8px;
+    }
+
+    .proj-arrow {
+      font-size: 18px;
+      color: var(--text-dim);
+      transition: color 0.2s, transform 0.2s;
+      line-height: 1;
+    }
+
+    .proj-card:hover .proj-arrow {
+      color: var(--text);
+      transform: translate(2px, -2px);
+    }
+
+    .proj-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .proj-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .proj-stack {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .stack-pill {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      border: 0.5px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 7px;
+      letter-spacing: 0.04em;
+    }
+
+    /* ABOUT */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+
+    .about-text {
+      font-size: 15px;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    .about-text p + p { margin-top: 16px; }
+
+    .about-text strong { color: var(--text); font-weight: 500; }
+
+    .skills-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .skill-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+    }
+
+    .skill-name { color: var(--text); font-weight: 500; }
+
+    .skill-level {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    /* CONTACT */
+    .contact-inner {
+      background: var(--bg2);
+      border: 0.5px solid var(--border);
+      border-radius: 20px;
+      padding: 56px;
+      text-align: center;
+    }
+
+    .contact-title {
+      font-size: clamp(28px, 4vw, 48px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+
+    .contact-sub {
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-bottom: 36px;
+    }
+
+    .contact-links {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border: 0.5px solid var(--border-hover);
+      border-radius: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-family: 'DM Mono', monospace;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .contact-link:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    /* FOOTER */
+    footer {
+      padding: 32px 48px;
+      border-top: 0.5px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer p {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      nav { padding: 16px 24px; }
+      .hero, section { padding-left: 24px; padding-right: 24px; }
+      .projects-grid, .about-grid { grid-template-columns: 1fr; }
+      .contact-inner { padding: 36px 24px; }
+      footer { flex-direction: column; gap: 8px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="nav">
+    <a href="#" class="nav-logo">L.<span>Azevedo</span></a>
+    <ul class="nav-links">
+      <li><a href="#projetos">projetos</a></li>
+      <li><a href="#sobre">sobre</a></li>
+      <li><a href="#contato">contato</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">front-end developer · recife, pe</div>
+    <h1 class="hero-title">
+      construo<br>
+      <span class="line2">interfaces</span><br>
+      <span class="accent">reais.</span>
+    </h1>
+    <p class="hero-desc">
+      Estudante de ADS na Cesar School. Apaixonado por transformar ideias em produtos digitais que funcionam de verdade.
+    </p>
+    <div class="hero-actions">
+      <div class="status-badge">
+        <div class="status-dot"></div>
+        disponível para estágio
+      </div>
+      <a href="#projetos" class="btn-primary">ver projetos →</a>
+      <a href="#contato" class="btn-ghost">contato</a>
+    </div>
+  </div>
+
+  <!-- PROJECTS -->
+  <section id="projetos">
+    <div class="section-header reveal">
+      <span class="section-number">01</span>
+      <span class="section-title">Projetos recentes</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="projects-grid">
+      <a class="proj-card reveal" href="#" style="transition-delay: 0.05s">
+        <div class="proj-card-top">
+          <span class="proj-tag">HTML · CSS · JS</span>
+          <span class="proj-arrow">↗</span>
+        </div>
+        <div class="proj-title">Sabor do Norte</div>
+        <p class="proj-desc">Site para restaurante local com cardápio interativo e formulário de reservas. Responsivo e otimizado para mobile.</p>
+        <div class="proj-stack">
+          <span class="stack-pill">HTML5</span>
+          <span class="stack-pill">CSS3</span>
+          <span class="stack-pill">JavaScript</span>
+        </div>
+      </a>
+
+      <a class="proj-card reveal" href="#" style="transition-delay: 0.1s">
+        <div class="proj-card-top">
+          <span class="proj-tag">React</span>
+          <span class="proj-arrow">↗</span>
+        </div>
+        <div class="proj-title">DevQuiz</div>
+        <p class="proj-desc">Quiz interativo sobre lógica de programação com pontuação, timer e ranking. Primeiro projeto em React.</p>
+        <div class="proj-stack">
+          <span class="stack-pill">React</span>
+          <span class="stack-pill">Hooks</span>
+          <span class="stack-pill">CSS Modules</span>
+        </div>
+      </a>
+
+      <a class="proj-card reveal" href="#" style="transition-delay: 0.15s">
+        <div class="proj-card-top">
+          <span class="proj-tag">JS · API</span>
+          <span class="proj-arrow">↗</span>
+        </div>
+        <div class="proj-title">WeatherNow</div>
+        <p class="proj-desc">App de clima que consome API externa e exibe temperatura, vento e previsão dos próximos dias.</p>
+        <div class="proj-stack">
+          <span class="stack-pill">JavaScript</span>
+          <span class="stack-pill">Fetch API</span>
+          <span class="stack-pill">OpenWeather</span>
+        </div>
+      </a>
+
+      <a class="proj-card reveal" href="#" style="transition-delay: 0.2s">
+        <div class="proj-card-top">
+          <span class="proj-tag">HTML · CSS</span>
+          <span class="proj-arrow">↗</span>
+        </div>
+        <div class="proj-title">Barbearia Roots</div>
+        <p class="proj-desc">Landing page para barbearia com agendamento online, galeria de trabalhos e depoimentos de clientes.</p>
+        <div class="proj-stack">
+          <span class="stack-pill">HTML5</span>
+          <span class="stack-pill">CSS Grid</span>
+          <span class="stack-pill">Flexbox</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="sobre">
+    <div class="section-header reveal">
+      <span class="section-number">02</span>
+      <span class="section-title">Sobre</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <p>
+          Sou estudante de <strong>ADS na Cesar School</strong>, em Recife, construindo minha carreira com foco em desenvolvimento front-end.
+        </p>
+        <p>
+          Meu objetivo é criar produtos digitais que resolvam problemas reais — e no futuro, empreender nessa área. Cada projeto é um passo nessa direção.
+        </p>
+        <p>
+          Estou em busca do meu <strong>primeiro estágio</strong> e aberto a freelas. Se você tem um projeto interessante, me chama.
+        </p>
+      </div>
+
+      <div class="skills-list reveal" style="transition-delay: 0.1s">
+        <div class="skill-item">
+          <span class="skill-name">HTML & CSS</span>
+          <span class="skill-level">sólido</span>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">JavaScript</span>
+          <span class="skill-level">intermediário</span>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">React</span>
+          <span class="skill-level">aprendendo</span>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">Git & GitHub</span>
+          <span class="skill-level">intermediário</span>
+        </div>
+        <div class="skill-item">
+          <span class="skill-name">UI Design</span>
+          <span class="skill-level">aprendendo</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contato">
+    <div class="section-header reveal">
+      <span class="section-number">03</span>
+      <span class="section-title">Contato</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="contact-inner reveal">
+      <h2 class="contact-title">Vamos trabalhar juntos?</h2>
+      <p class="contact-sub">Aberto a estágios, freelas e boas conversas sobre tecnologia.</p>
+      <div class="contact-links">
+        <a class="contact-link" href="mailto:seu@email.com">✉ seu@email.com</a>
+        <a class="contact-link" href="https://linkedin.com/in/seu-perfil" target="_blank">↗ linkedin</a>
+        <a class="contact-link" href="https://github.com/lazevedo" target="_blank">↗ github</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2026 L. Azevedo</p>
+    <p>feito com HTML, CSS & JS</p>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    reveals.forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
